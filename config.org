@@ -1,0 +1,274 @@
+#+TITLE: My Windows's GNU Emacs Config
+#+AUTHOR: Little Clover
+#+DESCRIPTION: My Emacs configuration as a temporary solution to my broke down computer
+
+* About
+Here's the story: my university has a suck ass WiFi configuration that
+nobody could connect to. I thought I could do it without much
+hassle. However, it ended up breaking down my whole computer.
+
+So I end up here, coding in Emacs instead up my years long mature
+Neovim configurations. (Sigh)
+
+* Package Manager Configuration
+I need to includes MELPA packages to ease the package management in
+Emacs. I don't want to include every MELPA packages manually, let the
+builtin package manager do its job. After loading the package manager,
+I'll simply intialise all packages I've installed.
+
+#+BEGIN_SRC emacs-lisp
+  (require 'package)
+  (add-to-list 'package-archives
+               '("melpa" . "https://melpa.org/packages/"))
+  (package-refresh-contents)
+  (package-initialize)
+#+END_SRC
+
+* Load use-package
+Now load ~use-package~ for the ease of package initialisation and
+configuration. Add ~\~/.emacs.d/elpa/~ to load path.
+
+#+BEGIN_SRC emacs-lisp
+  (eval-when-compile 
+    (add-to-list 'load-path "~/.emacs.d/elpa/")
+    (require 'use-package))
+#+END_SRC
+
+* Emacs Configurations
+
+** Basic Settings
+
+*** Allow emacsclient (Windows)
+The need to startup a new session for Emacs could be tedious as the
+loading time (primarily from synchronising packages from ELPA and
+MELPA) can be extremly long. I don't have the patient to wait all the
+time.
+
+First, I need to start a server if there is currently none running in
+the memory. Because of the microkernel nature of the Windows kernel, I
+need to setup a TCP socket instead of a local socket for the client
+connection. A server authentication directory is needed for a TCP
+connection.
+
+There is an error when starting Emacs with this method. It will
+complain such connection is unsafe. In order to successfully open up
+Emacs via this method, the error message must be suppressed.
+
+#+BEGIN_SRC emacs-lisp
+  ;;  (use-package server
+  ;;    :config
+  ;;    (or (eq (sever-running-p) t)
+  ;;        (server-start))
+  ;;    (when (equal window-system 'w32)
+  ;;      (setq server-use-tcp t))
+  ;;    (setq server-auth-dir
+  ;;          (let ((dir (concat user-emacs-directory
+  ;;                             "server_" (format "%s_%s"
+  ;;                                               emacs-major-version
+  ;;                                               emacs-minor-version)
+  ;;                             "_" (system-name)
+  ;;                             "/")))
+  ;;            (make-directory dir :parents)
+  ;;            dir))
+  ;;    (with-eval-after-load 'server
+  ;;      (when (equal window-system 'w32)
+  ;;        (defun server-ensure-safe-dir (dir) "Noop" t))))
+#+END_SRC
+
+*** Theme and Appearance
+I don't like the default appearance for Emacs. Too much
+distraction. In here, I disable the menu bar, scroll bar and tool bar.
+
+#+BEGIN_SRC emacs-lisp
+  (menu-bar-mode -1)
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)
+#+END_SRC
+
+I apply Poet theme to my Emacs since it is a great support for various
+text major mode such as Markdown, LaTeX and [[*Org][Org]].
+
+#+BEGIN_SRC emacs-lisp
+  (use-package poet-theme
+    :config
+    (load-theme 'poet t))
+
+  (add-hook 'text-mode-hook (lambda () (variable-pitch-mode 1)))
+  (set-face-attribute 'default nil :family "IBM Plex Mono" :height 110)
+  (set-face-attribute 'fixed-pitch nil :family "IBM Plex Mono")
+  (set-face-attribute 'variable-pitch nil :family "IBM Plex Serif")
+#+END_SRC
+
+*** Tabs
+Say no to Tab character, all glories to the spaces! Seriously, I can't
+even load up [[*Parinfer][Parinfer]] without disabling the ~indent-tabs-mode~ since
+it doesn't recognise the tab character. And to be fair, nothing will
+be missed from saying goodbye to the evil Tab character
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default indent-tabs-mode nil)
+#+END_SRC
+
+*** Keybindings
+**** Evaluations
+I want to have nice keybindings to easily evaluates Lisp. This section
+should be subjected to changes since I haven't found out what's the
+most sensible and comfortable keybinds for me.
+
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-c C-b") #'eval-buffer)
+  (global-set-key (kbd "C-c C-r") #'eval-region)
+  (global-set-key (kbd "C-M-x")   #'eval-defun)
+  (global-set-key (kbd "C-j")     #'eval-print-last-sexp)
+  (global-set-key (kbd "C-x C-e") #'eval-last-sexp)
+#+END_SRC
+
+** Which-Key
+I get lost in massive Emacs default keybindings and other major
+pakcages keybindings. Having a hint is great. ~which-key~ is that kind
+of plugin that I currently need.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package which-key
+    :config (which-key-mode 1))
+#+END_SRC
+
+** Dashboard
+A dashboard is good to have in Emacs. I can now access to my projects
+and recently open files.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package dashboard
+     :ensure t
+     :config
+     (dashboard-setup-startup-hook))
+#+END_SRC
+
+** Magit
+Magit is the wrap around for the Git CMD. I think most of the Emacs
+fanboy love it, so why not try it?
+
+#+BEGIN_SRC emacs-lisp
+  (use-package magit)
+#+END_SRC
+
+** Org
+Ah, Org Mode, one of the nice things that everyone should have. I
+attach some keybinds to some Org functions, configure the default
+=org-directory= and notes file (particularly TODO files).
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org
+    :bind (("C-c l" . #'org-store-link)
+           ("C-c a" . #'org-agenda)
+           ("C-c c" . #'org-capture))
+    :config
+    (setq org-directory "~/Documents/org"
+          org-default-notes-file (concat org-directory "/notes.org")
+          org-agenda-files '((concat org-directory "/todo/"))))
+#+END_SRC
+
+*** Bullets
+No one likes ASCII stars as bullets. We have something call UTF8
+character encoding where we can just put a nice looking bullet for
+aesthetic purpose. Why not use it on the Org Mode?
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-bullets
+    :init (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+END_SRC
+  
+*** Journal
+I've a habit of writing journal everyday. It's a bummer that I need to
+leaves my original journal that was written in [[https://github.com/nvim-neorg/neorg][Neorg]]. Luckily in Org
+community, there is a mature plugin call ~org-journal~ to fit in this
+void. Not as prefect but pretty workable.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package org-journal)
+#+END_SRC
+
+** SLIME
+SLIME is the Superior Lisp Interaction Mode for Emacs that support
+interative programming in Common Lisp.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package slime
+    :config
+    (add-to-list 'exec-path "C:\\Program Files\\Steel Bank Common Lisp")
+    (setq inferior-lisp-program "sbcl"))
+#+END_SRC
+
+** Parinfer
+I learnt about Parinfer when I was in Neovim community. It is such an
+incredible plugin for Lisp variants! You can learn more about it in
+[[https://shaunlebron.github.io/parinfe/][its website]]. ~parinfer-rust-mode~ relies on the program ~parinfer~. I
+rather have the plugin to help me handle that dependency since I'm in
+a suck ass OS (in case you don't know, its Windows).
+
+#+BEGIN_SRC emacs-lisp
+  (use-package parinfer-rust-mode
+    :hook emacs-lisp-mode
+    :init (setq parinfer-rust-auto-download t))
+#+END_SRC
+
+** Rust Mode
+Rust Mode is a major mode prepare for Rust programming languages
+primarily incorporates funtionality from Cargo, clippy and
+rustfmt. There is nothing need to be setup except for the
+prerequisites and require them into the Emacs.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package rust-mode
+    :init (add-hook 'rust-mode-hook (lambda () (prettyify-symbol-mode)))
+    :config (setq rust-format-on-save t)
+    :bind (("C-c C-c" . #'rust-run)))
+#+END_SRC
+
+** Elfeed
+Elfeed is a RSS and Atom feed reader embeded into Emacs for news
+retrieval.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package elfeed
+     :bind (("C-x w" . #'elfeed))
+     :init (setq elfeed-feeds
+                 '("https://ingram1107.github.io/feed.xml"
+                   "https://fetchrss.com/rss/5fc49afeda3ea52bcd292925fc49acfd7def67d3a3c3cd2.atom" ;; MMU Studnet Council
+                   "https://www.malaysiakini.com/rss/my/news.rss"
+                   "https://www.malaysiakini.com/rss/my/columns.rss"
+                   "https://www.malaysiakini.com/rss/my/letters.rss"
+                   "https://sosialis.net/feed"
+                   "https://thinkleft.net/feed"
+                   "http://www.mtuc.org/my/feed"
+                   "https://partisosialis.org/feed"
+                   "https://clb.org.hk/zh-hans/en/rss.xml"
+                   "https://jacobinmag.com/feed"
+                   "https://www.marxist.com/feed/rss"
+                   "https://feeds.feedburner.com/SocialistAppealNews"
+                   "https://www.doubledown.news/watch?format=rss"
+                   "https://freedomnews.org.uk/feed"
+                   "https://www.janes.com/feeds/news"
+                   "https://phys.org/rss-feed/"
+                   "https://feeds.feedburner.com/pnas/SMZM"
+                   "http://rss.slashsdot.org/Slashdot/slashdotMain"
+                   "https://www.phronix.com/rss.php"
+                   "https://www.linuxjournal.com/node/feed?x="
+                   "https://blog.llvm.org/index.xml"
+                   "https://projecteuler.net/rss2_euler.xml"
+                   "https://static.fsf.org/fsforg/rss/news.xml"
+                   "https://static.fsf.org/fsforg/rss/events.xml"
+                   "https://static.fsf.org/fsforg/rss/blogs.xml"
+                   "https://itsfoss.com/feed"
+                   "https://opensource.com/feed"
+                   "https://www.schneier.com/blog/atom.xml"
+                   "https://utcc.utoronto.ca/~cks/space/blog/?atom"
+                   "https://blog.wesleyac.com/feed.xml"
+                   "https://hiphish.github.io/blog/rss.xml"
+                   "https://trugman-internals.com/feed"
+                   "https://rssfeed.today/weibo/rss/2803301701"
+                   "https://rssfeed.today/weibo/rss/3937348351"
+                   "https://github.com/alacritty/alacritty/commits/master.atom"
+                   "https://github.com/neovim/neovim/commits/master.atom"
+                   "https://www.archlinux.org/feeds/news")))
+#+END_SRC
