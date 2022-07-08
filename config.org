@@ -213,7 +213,7 @@ a suck ass OS (in case you don't know, its Windows).
 #+END_SRC
 
 ** Rust Mode
-Rust Mode is a major mode prepare for Rust programming languages
+Rust Mode is a major mode prepare for Rust programming language
 primarily incorporates funtionality from Cargo, clippy and
 rustfmt. There is nothing need to be setup except for the
 prerequisites and require them into the Emacs.
