@@ -212,7 +212,8 @@ a suck ass OS (in case you don't know, its Windows).
     :init (setq parinfer-rust-auto-download t))
 #+END_SRC
 
-** Rust Mode
+** Programming Language Major Modes
+*** Rust Mode
 Rust Mode is a major mode prepare for Rust programming language
 primarily incorporates funtionality from Cargo, clippy and
 rustfmt. There is nothing need to be setup except for the
@@ -223,6 +224,13 @@ prerequisites and require them into the Emacs.
     :init (add-hook 'rust-mode-hook (lambda () (prettyify-symbol-mode)))
     :config (setq rust-format-on-save t)
     :bind (("C-c C-c" . #'rust-run)))
+#+END_SRC
+
+*** Julia Mode
+Julia Mode is a major mode prepare for Julia programming language.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package julia-mode)
 #+END_SRC
 
 ** Elfeed
