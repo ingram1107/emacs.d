@@ -11,7 +11,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(julia-mode magit rust-mode slime elfeed dashboard which-key poet-theme org-bullets parinfer-rust-mode use-package org-journal org ledger-mode)))
+   '(orderless lsp-ui lsp-mode corfu julia-mode magit rust-mode slime elfeed dashboard which-key poet-theme org-bullets parinfer-rust-mode use-package org-journal org ledger-mode)))
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.

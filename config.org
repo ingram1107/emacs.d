@@ -199,6 +199,61 @@ interative programming in Common Lisp.
     (setq inferior-lisp-program "sbcl"))
 #+END_SRC
 
+** Corfu
+Corfu is a text completion framework for Emacs. I use it in company
+with [[*LSP-Mode][LSP-Mode]] in order to have great code suggestions.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package corfu
+    :custom
+    (corfu-cycle t)
+    (corfu-auto t)
+
+   :init
+   (global-corfu-mode))
+#+END_SRC
+
+** LSP-Mode
+Language Server Protocol is a utility that enable various features
+such as static code diagnostic, code completion suggestion and even
+style formatting. By using ~lsp-mode~ company with a completion
+framework such as [[*Corfu][Corfu]], we could get a comprehensive code completion
+suggestion from the language server.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-mode
+    :init
+    (setq lsp-keymap-prefix "C-c l")
+
+    :hook
+    (c-mode . lsp)
+    (c++-mode . lsp)
+    (rust-mode . lsp)
+    (perl-mode . lsp)
+    (lsp-mode . lsp-enable-which-key-integration)
+
+    :commands lsp)
+#+END_SRC
+
+And of course with the help from ~lsp-ui~ to enhance its UI.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-ui :commands lsp-ui-mode)
+#+END_SRC
+
+** Orderless
+Orderless package provides a fuzzy completion style that conviniently
+divides pattern into space-seperated components. I can search a
+particular pattern using literal string, regexp or flexible matches.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package orderless
+    :ensure t
+    :custom
+    (completion-styles '(orderless basic))
+    (completion-category-overrides '((file (styles basic partial-completion)))))
+#+END_SRC
+
 ** Parinfer
 I learnt about Parinfer when I was in Neovim community. It is such an
 incredible plugin for Lisp variants! You can learn more about it in
