@@ -1,4 +1,4 @@
-; Load up Org Mode and Org Babel for elisp embedded in Org Mode files
+;; Load up Org Mode and Org Babel for elisp embedded in Org Mode files
 (require 'org)
 (require 'ob-tangle)
 
