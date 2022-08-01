@@ -99,6 +99,15 @@ text major mode such as Markdown, LaTeX and [[*Org][Org]].
   (set-face-attribute 'variable-pitch nil :family "IBM Plex Serif")
 #+END_SRC
 
+With Smart Mode Line, it gives a more pleasing status line for the
+Emacs compare to the default. It doesn't need much to be set up, which
+is a great point for me.
+
+#+BEGIN_SRC emacs-lisp
+  (sml/setup)
+  (setq sml/theme 'respectful)
+#+END_SRC
+
 *** Tabs
 Say no to Tab character, all glories to the spaces! Seriously, I can't
 even load up [[*Parinfer][Parinfer]] without disabling the ~indent-tabs-mode~ since

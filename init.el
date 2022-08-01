@@ -1,3 +1,6 @@
+;; Workaround preventing Emacs warning about "Loading themes can run lisp code"
+(setq sml/no-confirm-load-theme t)
+
 ;; Load up Org Mode and Org Babel for elisp embedded in Org Mode files
 (require 'org)
 (require 'ob-tangle)
@@ -11,7 +14,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(orderless lsp-ui lsp-mode corfu julia-mode magit rust-mode slime elfeed dashboard which-key poet-theme org-bullets parinfer-rust-mode use-package org-journal org ledger-mode)))
+   '(smart-mode-line orderless lsp-ui lsp-mode corfu julia-mode magit rust-mode slime elfeed dashboard which-key poet-theme org-bullets parinfer-rust-mode use-package org-journal org ledger-mode)))
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
