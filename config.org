@@ -149,7 +149,8 @@ Magit is the wrap around for the Git CMD. I think most of the Emacs
 fanboy love it, so why not try it?
 
 #+BEGIN_SRC emacs-lisp
-  (use-package magit)
+  (use-package magit
+    :bind ("C-c d" . #'magit))
 #+END_SRC
 
 ** Org
